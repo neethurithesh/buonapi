@@ -14,7 +14,7 @@ exports.create = (req, res) => {
   const id = uuidv4();
   db.query('INSERT INTO drivers SET ?, ?', data, (err) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.status(201).json({ data });
+    res.status(201).json({ ...data });
   });
 };
 
