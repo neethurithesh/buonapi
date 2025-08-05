@@ -11,35 +11,50 @@ exports.getAll = (req, res) => {
 
 exports.create = (req, res) => {
   const data = req.body;
+  console.log('Incoming request:', data);
 
   if (!data.email || !data.password) {
     return res.status(400).json({ error: 'Email and password are required' });
-  } 
+  }
+
   db.query('SELECT id FROM drivers WHERE email = ?', [data.email], (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
+    if (err) {
+      console.error('Error checking email:', err);
+      return res.status(500).json({ error: err.message });
+    }
 
     if (results.length > 0) {
       return res.status(400).json({ error: 'Email already exists' });
     }
- 
-    bcrypt.hash(data.password, 10, (err, hashedPassword) => {
-      if (err) return res.status(500).json({ error: 'Error encrypting password' });
 
-      
+    console.log('Email is unique, proceeding to hash password...');
+
+    const bcrypt = require('bcrypt');
+    bcrypt.hash(data.password, 10, (err, hashedPassword) => {
+      if (err) {
+        console.error('Error hashing password:', err);
+        return res.status(500).json({ error: 'Error encrypting password' });
+      }
+
       const driverData = {
         ...data,
         password: hashedPassword
       };
 
-      db.query('INSERT INTO drivers SET ?', driverData, (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
+      db.query('INSERT INTO drivers SET ?', driverData, (err) => {
+        if (err) {
+          console.error('Error inserting driver:', err);
+          return res.status(500).json({ error: err.message });
+        }
 
-        const { password, ...responseData } = driverData; // remove password from response
+        const { password, ...responseData } = driverData;
+        console.log('Driver created successfully:', responseData);
         res.status(201).json(responseData);
       });
     });
   });
 };
+
 
 exports.update = (req, res) => {
   const id = req.params.id;
