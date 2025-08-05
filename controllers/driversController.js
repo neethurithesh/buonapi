@@ -28,7 +28,6 @@ exports.create = async (req, res) => {
       const hashedPassword = await bcrypt.hash(data.password, saltRounds);
 
       const newDriver = {
-        id,
         ...data,
         password: hashedPassword
       };
