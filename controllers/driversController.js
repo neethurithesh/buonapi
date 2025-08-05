@@ -9,41 +9,36 @@ exports.getAll = (req, res) => {
   });
 };
 
-
-exports.create = async (req, res) => {
+exports.create = (req, res) => {
   const data = req.body;
-  const id = uuidv4();
 
-  try {
-   
-    db.query('SELECT * FROM drivers WHERE email = ?', [data.email], async (err, results) => {
-      if (err) return res.status(500).json({ error: err.message });
+  if (!data.email || !data.password) {
+    return res.status(400).json({ error: 'Email and password are required' });
+  } 
+  db.query('SELECT id FROM drivers WHERE email = ?', [data.email], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
 
-      if (results.length > 0) {
-        return res.status(400).json({ error: 'Email already exists' });
-      }
+    if (results.length > 0) {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+ 
+    bcrypt.hash(data.password, 10, (err, hashedPassword) => {
+      if (err) return res.status(500).json({ error: 'Error encrypting password' });
 
-     
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(data.password, saltRounds);
-
-      const newDriver = {
+      
+      const driverData = {
         ...data,
         password: hashedPassword
       };
 
-      
-      db.query('INSERT INTO drivers SET ?', newDriver, (err) => {
+      db.query('INSERT INTO drivers SET ?', driverData, (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
 
-         
-        const { password, ...driverData } = newDriver;
-        res.status(201).json(driverData);
+        const { password, ...responseData } = driverData; // remove password from response
+        res.status(201).json(responseData);
       });
     });
-  } catch (error) {
-    res.status(500).json({ error: 'Server error' });
-  }
+  });
 };
 
 exports.update = (req, res) => {
