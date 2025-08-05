@@ -8,16 +8,14 @@ exports.getAll = (req, res) => {
   });
 };
 
- 
 exports.create = (req, res) => {
   const data = req.body;
   const id = uuidv4();
-  db.query('INSERT INTO drivers SET ?, ?', data, (err) => {
+ db.query('INSERT INTO staff_users SET ?', data, (err) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.status(201).json({ ...data });
+    res.status(201).json({ id, ...data });
   });
 };
-
 exports.update = (req, res) => {
   const id = req.params.id;
   db.query('UPDATE drivers SET ? WHERE id = ?', [req.body, id], (err) => {
