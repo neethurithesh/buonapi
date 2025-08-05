@@ -16,6 +16,7 @@ exports.create = (req, res) => {
     res.status(201).json({ id, ...data });
   });
 };
+
 exports.update = (req, res) => {
   const id = req.params.id;
   db.query('UPDATE drivers SET ? WHERE id = ?', [req.body, id], (err) => {
