@@ -11,7 +11,7 @@ exports.getAll = (req, res) => {
 exports.create = (req, res) => {
   const data = req.body;
   const id = uuidv4();
- db.query('INSERT INTO staff_users SET ?', data, (err) => {
+ db.query('INSERT INTO drivers SET ?', data, (err) => {
     if (err) return res.status(500).json({ error: err.message });
     res.status(201).json({ id, ...data });
   });
