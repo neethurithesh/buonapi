@@ -12,12 +12,12 @@ exports.getAll = (req, res) => {
 exports.create = (req, res) => {
   const data = req.body;
   console.log('Incoming request:', data);
-
-  if (!data.email || !data.password) {
+  
+  if (!data.username || !data.password) {
     return res.status(400).json({ error: 'Email and password are required' });
   }
 
-  db.query('SELECT id FROM drivers WHERE email = ?', [data.email], (err, results) => {
+  db.query('SELECT id FROM drivers WHERE email = ?', [data.username], (err, results) => {
     if (err) {
       console.error('Error checking email:', err);
       return res.status(500).json({ error: err.message });
