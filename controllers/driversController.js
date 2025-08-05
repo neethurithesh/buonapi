@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 
 exports.getAll = (req, res) => {
