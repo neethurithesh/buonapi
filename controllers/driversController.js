@@ -13,8 +13,12 @@ exports.create = (req, res) => {
   const data = req.body;
   console.log('Incoming request:', data);
   
-  if (!data.username || !data.password) {
-    return res.status(400).json({ error: 'Email and password are required' });
+  if (!data.username ) {
+    return res.status(400).json({ error: 'Email address is required' });
+  }
+
+  if (!data.password) {
+    return res.status(400).json({ error: 'Password is required' });
   }
 
   db.query('SELECT id FROM drivers WHERE email = ?', [data.username], (err, results) => {
