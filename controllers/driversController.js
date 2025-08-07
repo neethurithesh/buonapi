@@ -27,7 +27,7 @@ exports.create = (req, res) => {
     if (results.length > 0) {
       return res.status(400).json({ error: 'Email already exists' });
     }
- 
+ res.status(400).json({ error: 'test' });
     const bcrypt = require('bcrypt');
     bcrypt.hash(data.password, 10, (err, hashedPassword) => {
       if (err) { 
