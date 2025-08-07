@@ -36,7 +36,8 @@ exports.create = (req, res) => {
 
       const driverData = {
         ...data,
-        password: hashedPassword
+        password: hashedPassword,
+        email: data.username
       };
 
       db.query('INSERT INTO drivers SET ?', driverData, (err) => {
