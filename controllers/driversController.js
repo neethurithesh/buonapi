@@ -21,7 +21,7 @@ exports.create = (req, res) => {
 
   db.query('SELECT id FROM drivers WHERE email = ?', [data.username], (err, results) => {
     if (err) { 
-      return res.status(500).json({ error: err.message });
+      return res.status(500).json({ error: "error email" });
     }
 
     if (results.length > 0) {
@@ -43,7 +43,7 @@ exports.create = (req, res) => {
       db.query('INSERT INTO drivers SET ?', driverData, (err) => {
         if (err) {
          
-          return res.status(500).json({ error: err.message });
+          return res.status(500).json({ error: "error insert" });
         }
 
         const { password, ...responseData } = driverData;
