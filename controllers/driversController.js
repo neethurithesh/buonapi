@@ -18,7 +18,7 @@ exports.create = (req, res) => {
   if (!data.password) {
     return res.status(400).json({ error: 'Password is required' });
   }
- res.status(400).json({ error: 'test' });
+ 
   db.query('SELECT id FROM drivers WHERE email = ?', [data.username], (err, results) => {
     if (err) { 
       return res.status(500).json({ error: "error email" });
