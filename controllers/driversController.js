@@ -35,7 +35,7 @@ exports.create = (req, res) => {
       }
 
       const driverData = {
-        ...data,
+        name: data.name,
         password: hashedPassword,
         email: data.username
       };
