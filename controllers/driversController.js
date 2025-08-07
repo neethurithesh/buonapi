@@ -10,9 +10,7 @@ exports.getAll = (req, res) => {
 };
 
 exports.create = (req, res) => {
-  const data = req.body;
-  console.log('Incoming request:', data);
-  
+  const data = req.body; 
   if (!data.username ) {
     return res.status(400).json({ error: 'Email address is required' });
   }
@@ -22,21 +20,17 @@ exports.create = (req, res) => {
   }
 
   db.query('SELECT id FROM drivers WHERE email = ?', [data.username], (err, results) => {
-    if (err) {
-      console.error('Error checking email:', err);
+    if (err) { 
       return res.status(500).json({ error: err.message });
     }
 
     if (results.length > 0) {
       return res.status(400).json({ error: 'Email already exists' });
     }
-
-    console.log('Email is unique, proceeding to hash password...');
-
+ 
     const bcrypt = require('bcrypt');
     bcrypt.hash(data.password, 10, (err, hashedPassword) => {
-      if (err) {
-        console.error('Error hashing password:', err);
+      if (err) { 
         return res.status(500).json({ error: 'Error encrypting password' });
       }
 
@@ -47,12 +41,12 @@ exports.create = (req, res) => {
 
       db.query('INSERT INTO drivers SET ?', driverData, (err) => {
         if (err) {
-          console.error('Error inserting driver:', err);
+         
           return res.status(500).json({ error: err.message });
         }
 
         const { password, ...responseData } = driverData;
-        console.log('Driver created successfully:', responseData);
+        
         res.status(201).json(responseData);
       });
     });
