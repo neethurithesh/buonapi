@@ -19,7 +19,39 @@ exports.create = (req, res) => {
     return res.status(400).json({ error: 'Password is required' });
   }
  res.status(400).json({ error: 'test' });
- 
+  db.query('SELECT id FROM drivers WHERE email = ?', [data.username], (err, results) => {
+    if (err) { 
+      return res.status(500).json({ error: "error email" });
+    }
+
+    if (results.length > 0) {
+      return res.status(400).json({ error: err.message});
+    }
+  
+    const bcrypt = require('bcrypt');
+    bcrypt.hash(data.password, 10, (err, hashedPassword) => {
+      if (err) { 
+        return res.status(500).json({ error: 'Error encrypting password' });
+      }
+
+      const driverData = {
+        name: data.name,
+        password: hashedPassword,
+        email: data.username
+      };
+
+      db.query('INSERT INTO drivers SET ?', driverData, (err) => {
+        if (err) {
+         
+          return res.status(500).json({ error:err.message});
+        }
+
+        const { password, ...responseData } = driverData;
+        
+        res.status(201).json(responseData);
+      });
+    });
+  });
 };
 
 
