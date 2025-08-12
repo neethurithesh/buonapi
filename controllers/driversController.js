@@ -20,9 +20,9 @@ exports.create = (req, res) => {
     return res.status(400).json({ error: 'Password is required' });
   }
  
-  db.query('SELECT id FROM drivers WHERE email = ?', [data.username], (err, results) => {
+  db.query('SELECT id FROM drivers WHERE email = ?', [data.email], (err, results) => {
     if (err) { 
-      return res.status(500).json({ error: "error email" });
+      return res.status(500).json({ error: "Email address already registered!" });
     }
 
     if (results.length > 0) {
