@@ -49,7 +49,7 @@ exports.create = (req, res) => {
          
         const { password, ...responseData } = driverData;
         
-        res.status(201).json({ success: 'Successfully Registered!' });
+        return res.status(201).json({ success: 'Successfully Registered!' });
       });
     });
   });
