@@ -11,9 +11,10 @@ exports.getAll = (req, res) => {
 
 exports.create = (req, res) => {
   const data = req.body; 
+  
   if (!data.username ) {
-    return res.status(400).json({ error: 'Email address is required' });
-  }
+    return res.status(400).json({ error: 'Username is required' });
+  } 
 
   if (!data.password) {
     return res.status(400).json({ error: 'Password is required' });
@@ -35,9 +36,8 @@ exports.create = (req, res) => {
       }
 
       const driverData = {
-        name: data.name,
-        password: hashedPassword,
-        email: data.username
+        ...data,
+        password: hashedPassword, 
       };
 
       db.query('INSERT INTO drivers SET ?', driverData, (err) => {
