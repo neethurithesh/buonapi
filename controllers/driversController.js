@@ -9,6 +9,19 @@ exports.getAll = (req, res) => {
   });
 };
 
+exports.login = (req, res) => {
+  const { username, password } = req.body;
+  db.query('SELECT * FROM drivers WHERE username = ?', [username], async (err, results) => {
+    if (err || results.length === 0) return res.status(401).send('Invalid credentials');
+    const user = results[0];
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) return res.status(401).send('Invalid credentials');
+    const token = jwt.sign({ id: user.id, role: user.role }, secretKey, { expiresIn: '1d' });
+    res.json({ token });
+  });
+};
+
+
 exports.create = (req, res) => {
   const data = req.body; 
   

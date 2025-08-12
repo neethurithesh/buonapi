@@ -5,3 +5,8 @@ exports.driversValidator = [
   body('email').isEmail(),
   body('password').notEmpty(),
 ];
+
+exports.driversLoginValidator = [ 
+  body('username').notEmpty(), 
+  body('password').notEmpty(),
+];
