@@ -45,10 +45,10 @@ exports.create = (req, res) => {
          
           return res.status(500).json({ error:err.message});
         }
-
+         
         const { password, ...responseData } = driverData;
         
-        res.status(201).json(responseData);
+        res.status(201).json({ success: 'Successfully Registered!' });
       });
     });
   });
