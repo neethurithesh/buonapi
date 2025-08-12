@@ -19,14 +19,15 @@ exports.create = (req, res) => {
   if (!data.password) {
     return res.status(400).json({ error: 'Password is required' });
   }
- return res.status(500).json({ error: 'error' });
+ 
   db.query('SELECT id FROM drivers WHERE email = ?', [data.email], (err, results) => {
     if (err) { 
-      return res.status(500).json({ error: "Email address already registered!" });
+      return res.status(400).json({ error: err.message});
     }
 
     if (results.length > 0) {
-      return res.status(400).json({ error: err.message});
+     
+       return res.status(500).json({ error: "Email address already registered!" });
     }
   
     const bcrypt = require('bcrypt');
