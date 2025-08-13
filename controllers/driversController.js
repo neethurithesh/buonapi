@@ -1,6 +1,5 @@
 const db = require('../config/db');
-const bcrypt = require('bcrypt');
-const { v4: uuidv4 } = require('uuid');
+const bcrypt = require('bcrypt'); 
 const jwt = require('jsonwebtoken');
 
 
@@ -13,8 +12,7 @@ exports.getAll = (req, res) => {
 
 exports.login = (req, res) => {
   const { username, password } = req.body;
-
-  // Validate input
+ 
   if (!username || !password) {
     return res.status(400).json({ error: 'Username and password are required' });
   }
@@ -30,7 +28,7 @@ exports.login = (req, res) => {
       if (!isValid) return res.status(401).json({ error: 'Invalid credentials' });
 
       const token = jwt.sign(
-        { id: user.id, name: user.full_name || user.name },
+        { id: user.id, name: user.name },
         process.env.JWT_SECRET,
         { expiresIn: '1d' }
       );
