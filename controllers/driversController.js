@@ -11,10 +11,11 @@ exports.getAll = (req, res) => {
 
 exports.login = (req, res) => {
   const { username, password } = req.body;
-  res.json({ "test" : "test" });
+
   db.query('SELECT * FROM drivers WHERE username = ?', [username], async (err, results) => {
     if (err || results.length === 0) return res.status(401).send('Invalid credentials');
     const user = results[0];
+      res.json({ "test" :user.name});
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) return res.status(401).send('Invalid credentials');
     const token = jwt.sign({ id: user.id, name: user.name }, secretKey, { expiresIn: '1d' });
