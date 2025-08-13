@@ -10,6 +10,7 @@ exports.getAll = (req, res) => {
   });
 };
 
+const secretKey = 'buon_by_nka';
 exports.login = (req, res) => {
   const { username, password } = req.body;
 
