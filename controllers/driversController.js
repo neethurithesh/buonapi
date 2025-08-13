@@ -12,33 +12,17 @@ exports.getAll = (req, res) => {
 
 exports.login = (req, res) => {
   const { username, password } = req.body;
- 
-  if (!username || !password) {
-    return res.status(400).json({ error: 'Username and password are required' });
-  }
 
   db.query('SELECT * FROM drivers WHERE username = ?', [username], async (err, results) => {
-    if (err) return res.status(500).json({ error: 'Database error' });
-    if (results.length === 0) return res.status(401).json({ error: 'Invalid credentials' });
-
+    if (err || results.length === 0) return res.status(401).send('Invalid credentials');
     const user = results[0];
-
-    try {
-      const isValid = await bcrypt.compare(password, user.password);
-      if (!isValid) return res.status(401).json({ error: 'Invalid credentials' });
-
-      const token = jwt.sign(
-        { id: user.id, name: user.name },
-        process.env.JWT_SECRET,
-        { expiresIn: '1d' }
-      );
-
-      res.json({ token });
-    } catch (error) {
-      res.status(500).json({ error: 'Error verifying password' });
-    }
+     
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) return res.status(401).send('Invalid credentials');
+    const token = jwt.sign({ id: user.id, name: user.name }, secretKey, { expiresIn: '1d' });
+    res.json({ token });
   });
-};
+}; 
 
 
 exports.create = (req, res) => {
