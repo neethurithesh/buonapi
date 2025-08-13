@@ -21,7 +21,7 @@ exports.login = (req, res) => {
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) return res.status(401).send('Invalid credentials');
     const token = jwt.sign({ id: user.id, name: user.name }, secretKey, { expiresIn: '1d' });
-    res.json({ token , id: user.id});
+    res.json({ token , id: user.id, driver:{id: user.id, name: user.name, email:user.email}});
   });
 }; 
 
