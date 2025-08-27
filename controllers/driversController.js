@@ -135,7 +135,7 @@ exports.update = (req, res) => {
 
   db.query('UPDATE drivers SET ? WHERE id = ?', [updateData, id], (err) => {
     if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: 'Updated successfully' });
+    res.json({ message: 'Updated successfully', success : true });
   });
 };
 
