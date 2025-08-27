@@ -16,5 +16,6 @@ router.post('/', driversValidator, validate, controller.create);
 router.post('/login', driversLoginValidator, validate, controller.login);
 router.put('/:id', driversValidator, validate, controller.update);
 router.delete('/:id', controller.remove);
+router.get('/:id/profile-image', controller.getProfileImage);
 
 module.exports = router;

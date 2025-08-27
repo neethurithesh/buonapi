@@ -73,12 +73,92 @@ exports.create = (req, res) => {
 };
 
 
+//exports.update = (req, res) => {
+ // const id = req.params.id;
+ // db.query('UPDATE drivers SET ? WHERE id = ?', [req.body, id], (err) => {
+  //  if (err) return res.status(500).json({ error: err.message });
+   // res.json({ message: 'Updated successfully' });
+  //});
+//};
+
 exports.update = (req, res) => {
   const id = req.params.id;
-  db.query('UPDATE drivers SET ? WHERE id = ?', [req.body, id], (err) => {
+  const body = { ...req.body };
+
+  // Build update payload from non-image fields
+  const updateData = { ...body };
+  delete updateData.profile_image_base64;
+  delete updateData.profile_image_mime;
+  delete updateData.id;
+
+  // Handle base64 -> Buffer (optional)
+  if (body.profile_image_base64) {
+    // Support both data URLs and raw base64
+    let base64 = body.profile_image_base64;
+    let mime = body.profile_image_mime || null;
+
+    const dataUrlMatch = /^data:(.+);base64,(.*)$/i.exec(base64);
+    if (dataUrlMatch) {
+      mime = dataUrlMatch[1];              // e.g. image/png
+      base64 = dataUrlMatch[2];            // strip the prefix
+    }
+
+    // Basic mime allowlist (extend as needed)
+    const allowed = new Set(['image/png', 'image/jpeg', 'image/webp']);
+    if (mime && !allowed.has(mime)) {
+      return res.status(400).json({ error: 'Unsupported image type. Allowed: png, jpeg, webp' });
+    }
+
+    // Decode
+    let buffer;
+    try {
+      buffer = Buffer.from(base64, 'base64');
+    } catch (e) {
+      return res.status(400).json({ error: 'Invalid base64 image data' });
+    }
+
+    // Optional size limit (2MB)
+    const MAX = 2 * 1024 * 1024;
+    if (buffer.length > MAX) {
+      return res.status(413).json({ error: 'Image too large (max 2MB)' });
+    }
+
+    // Assign to update payload
+    updateData.profile_image = buffer;
+    if (mime) updateData.profile_image_mime = mime;
+  }
+
+  // No fields provided?
+  if (Object.keys(updateData).length === 0) {
+    return res.status(400).json({ error: 'No fields to update' });
+  }
+
+  db.query('UPDATE drivers SET ? WHERE id = ?', [updateData, id], (err) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ message: 'Updated successfully' });
   });
+};
+
+/**
+ * Streams the stored image
+ * GET /api/drivers/:id/profile-image
+ */
+exports.getProfileImage = (req, res) => {
+  const id = req.params.id;
+  db.query(
+    'SELECT profile_image, profile_image_mime FROM drivers WHERE id = ? LIMIT 1',
+    [id],
+    (err, rows) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (!rows.length || !rows[0].profile_image) {
+        return res.status(404).json({ error: 'No profile image found' });
+      }
+      const mime = rows[0].profile_image_mime || 'application/octet-stream';
+      res.setHeader('Content-Type', mime);
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      res.end(rows[0].profile_image); // Buffer -> response
+    }
+  );
 };
 
 exports.remove = (req, res) => {
