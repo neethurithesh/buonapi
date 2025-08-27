@@ -161,6 +161,39 @@ exports.getProfileImage = (req, res) => {
   );
 };
 
+ 
+exports.changePassword = (req, res) => {
+  const driverId = req.user?.id; // set by auth middleware
+  const { current_password, new_password } = req.body;
+
+  if (!driverId) return res.status(401).json({ error: 'Unauthorized' });
+  if (!current_password || !new_password) {
+    return res.status(400).json({ error: 'current_password and new_password are required' });
+  }
+  if (new_password.length < 6) {
+    return res.status(400).json({ error: 'New password must be at least 6 characters' });
+  }
+
+  db.query('SELECT password FROM drivers WHERE id = ? LIMIT 1', [driverId], async (err, rows) => {
+    if (err) return res.status(500).json({ error: 'Database error' });
+    if (!rows.length) return res.status(404).json({ error: 'Driver not found' });
+
+    try {
+      const ok = await bcrypt.compare(current_password, rows[0].password);
+      if (!ok) return res.status(401).json({ error: 'Current password is incorrect' });
+
+      const hashed = await bcrypt.hash(new_password, 10);
+      db.query('UPDATE drivers SET password = ? WHERE id = ?', [hashed, driverId], (uErr) => {
+        if (uErr) return res.status(500).json({ error: 'Failed to update password' });
+        return res.json({ message: 'Password updated successfully' });
+      });
+    } catch (e) {
+      return res.status(500).json({ error: 'Error processing password' });
+    }
+  });
+};
+
+
 exports.remove = (req, res) => {
   const id = req.params.id;
   db.query('DELETE FROM drivers WHERE id = ?', [id], (err) => {

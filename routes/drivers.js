@@ -17,5 +17,7 @@ router.post('/login', driversLoginValidator, validate, controller.login);
 router.put('/:id', driversValidator, validate, controller.update);
 router.delete('/:id', controller.remove);
 router.get('/:id/profile-image', controller.getProfileImage);
+router.post('/change-password', auth, driverController.changePassword);
+
 
 module.exports = router;
