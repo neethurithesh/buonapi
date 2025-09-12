@@ -193,7 +193,6 @@ exports.changePassword = (req, res) => {
   });
 };
 
-
 exports.remove = (req, res) => {
   const id = req.params.id;
   db.query('DELETE FROM users WHERE id = ?', [id], (err) => {
