@@ -19,5 +19,4 @@ router.delete('/:id', controller.remove);
 router.get('/:id/profile-image', controller.getProfileImage);
 router.post('/change-password', controller.changePassword);
 
-
 module.exports = router;
