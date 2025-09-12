@@ -77,53 +77,62 @@ exports.create = async (req, res) => {
 };
 
 // PUT /api/users/:id  (supports base64 profile_image)
-exports.update = async (req, res) => {
-  try {
-    const id = req.params.id;
-    if (!id) return res.status(400).json({ error: 'Missing id parameter' });
+exports.update = (req, res) => {
+  const id = req.params.id;
+  const body = { ...req.body };
 
-    const body = { ...req.body };
-    delete body.id;
-    delete body.password; // password must be changed via change-password endpoint
+  // Build update payload from non-image fields
+  const updateData = { ...body };
+  delete updateData.profile_image_base64;
+  delete updateData.profile_image_mime;
+  delete updateData.id;
 
-    // Handle profile image base64 -> buffer
-    if (body.profile_image_base64) {
-      let base64 = body.profile_image_base64;
-      let mime = body.profile_image_mime || null;
-      const dataUrlMatch = /^data:(.+);base64,(.*)$/i.exec(base64);
-      if (dataUrlMatch) {
-        mime = dataUrlMatch[1];
-        base64 = dataUrlMatch[2];
-      }
+  // Handle base64 -> Buffer (optional)
+  if (body.profile_image_base64) {
+    // Support both data URLs and raw base64
+    let base64 = body.profile_image_base64;
+    let mime = body.profile_image_mime || null;
 
-      const allowed = new Set(['image/png', 'image/jpeg', 'image/webp']);
-      if (mime && !allowed.has(mime)) return res.status(400).json({ error: 'Unsupported image type' });
-
-      let buffer;
-      try {
-        buffer = Buffer.from(base64, 'base64');
-      } catch (e) {
-        return res.status(400).json({ error: 'Invalid base64 image data' });
-      }
-
-      const MAX = 2 * 1024 * 1024; // 2MB
-      if (buffer.length > MAX) return res.status(413).json({ error: 'Image too large (max 2MB)' });
-
-      body.profile_image = buffer;
-      if (mime) body.profile_image_mime = mime;
-
-      delete body.profile_image_base64;
-      delete body.profile_image_mime;
+    const dataUrlMatch = /^data:(.+);base64,(.*)$/i.exec(base64);
+    if (dataUrlMatch) {
+      mime = dataUrlMatch[1];              // e.g. image/png
+      base64 = dataUrlMatch[2];            // strip the prefix
     }
 
-    if (Object.keys(body).length === 0) return res.status(400).json({ error: 'No fields to update' });
+    // Basic mime allowlist (extend as needed)
+    const allowed = new Set(['image/png', 'image/jpeg', 'image/webp']);
+    if (mime && !allowed.has(mime)) {
+      return res.status(400).json({ error: 'Unsupported image type. Allowed: png, jpeg, webp' });
+    }
 
-    await query('UPDATE users SET ? WHERE id = ?', [body, id]);
-    res.json({ message: 'Updated successfully', success: true });
-  } catch (err) {
-    console.error('update user error:', err);
-    res.status(500).json({ error: 'Server error' });
+    // Decode
+    let buffer;
+    try {
+      buffer = Buffer.from(base64, 'base64');
+    } catch (e) {
+      return res.status(400).json({ error: 'Invalid base64 image data' });
+    }
+
+    // Optional size limit (2MB)
+    const MAX = 2 * 1024 * 1024;
+    if (buffer.length > MAX) {
+      return res.status(413).json({ error: 'Image too large (max 2MB)' });
+    }
+
+    // Assign to update payload
+    updateData.profile_image = buffer;
+    if (mime) updateData.profile_image_mime = mime;
   }
+
+  // No fields provided?
+  if (Object.keys(updateData).length === 0) {
+    return res.status(400).json({ error: 'No fields to update' });
+  }
+
+  db.query('UPDATE users SET ? WHERE id = ?', [updateData, id], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: 'Updated successfully', success : true });
+  });
 };
 
 // GET /api/users/:id/profile-image
