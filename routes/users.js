@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/usersController');
 const { usersValidator } = require('../middlewares/usersValidator');
+const { userLoginValidator } = require('../middlewares/usersValidator');
 const { validationResult } = require('express-validator');
 
 const validate = (req, res, next) => {
