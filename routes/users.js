@@ -15,7 +15,7 @@ router.post('/', usersValidator, validate, controller.create);
 router.put('/:id', usersValidator, validate, controller.update);
 router.delete('/:id', controller.remove);
 router.get('/:id/profile-image', controller.getProfileImage);
-router.post('/change-password', auth, controller.changePassword);
+router.post('/change-password', controller.changePassword);
 router.post('/login', userLoginValidator, validate, controller.login);
 
 module.exports = router;
