@@ -59,8 +59,6 @@ exports.getCabOptions = async (req, res) => {
       LEFT JOIN vehicle_types vt ON vt.id = p.vehicle_type_id 
     `;
 
-      return res.status(400).json({ success: false, error: sql });
-
     // using mysql2 promise interface
     const [rows] = await db.promise().query(sql);
 
