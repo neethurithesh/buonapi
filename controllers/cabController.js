@@ -27,6 +27,8 @@ exports.getCabOptions = async (req, res) => {
     const dLat = Number(destination.lat);
     const dLng = Number(destination.lng);
 
+    return res.status(400).json({ success: false, error: pLat });
+
     if (
       Number.isNaN(pLat) ||
       Number.isNaN(pLng) ||
