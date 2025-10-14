@@ -39,10 +39,11 @@ exports.getCabOptions = async (req, res) => {
     }
 
     const distanceKm = haversineDistanceKm(pLat, pLng, dLat, dLng);
+    return res.status(400).json({ success: false, distanceKm: distanceKm });
     // Optional: estimate duration in minutes (assume avg speed e.g. 30 km/h)
     const estMinutes = Math.max(1, Math.round((distanceKm / 30) * 60)); // crude estimate
 
-    return res.status(400).json({ success: false, error: estMinutes });
+    
 
     // Join pricing_options with vehicle_types to get vehicle info
     const sql = `
