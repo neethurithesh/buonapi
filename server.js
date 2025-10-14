@@ -16,7 +16,8 @@ app.use('/api/drivers', require('./routes/drivers'));
 app.use('/api/vehicle-types', require('./routes/vehicleTypes'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/dashboard', require('./routes/dashboard'));
-app.use('/api/cab-options', require('./routes/cab'));
+const cabRoutes = require('./routes/cab');
+app.use('/api/cab-options', cabRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
