@@ -43,8 +43,6 @@ exports.getCabOptions = async (req, res) => {
     // Optional: estimate duration in minutes (assume avg speed e.g. 30 km/h)
     const estMinutes = Math.max(1, Math.round((distanceKm / 30) * 60)); // crude estimate
 
- return res.status(400).json({ success: false, estMinutes: estMinutes });
-
 
     // Join pricing_options with vehicle_types to get vehicle info
     const sql = `
@@ -73,6 +71,8 @@ exports.getCabOptions = async (req, res) => {
       const perMin = Number(r.per_minute_rate || 0);
       const minimumFare = r.minimum_fare != null ? Number(r.minimum_fare) : null;
       const maximumFare = r.maximum_fare != null ? Number(r.maximum_fare) : null;
+
+      return res.status(400).json({ success: false, error: baseFare });
 
       // price calculation
       let price = baseFare + perKm * distanceKm + perMin * estMinutes;
