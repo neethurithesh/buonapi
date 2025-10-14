@@ -27,8 +27,7 @@ exports.getCabOptions = async (req, res) => {
     const dLat = Number(destination.lat);
     const dLng = Number(destination.lng);
 
-    return res.status(400).json({ success: false, long: pLng });
-
+  
     if (
       Number.isNaN(pLat) ||
       Number.isNaN(pLng) ||
@@ -37,6 +36,9 @@ exports.getCabOptions = async (req, res) => {
     ) {
       return res.status(400).json({ success: false, error: 'Invalid coordinates' });
     }
+
+  return res.status(400).json({ success: false, long: pLng });
+
 
     const distanceKm = haversineDistanceKm(pLat, pLng, dLat, dLng);
     // Optional: estimate duration in minutes (assume avg speed e.g. 30 km/h)
