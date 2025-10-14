@@ -51,15 +51,12 @@ exports.getCabOptions = async (req, res) => {
         p.vehicle_type_id,
         p.base_fare,
         p.per_km_rate,
-        p.per_minute_rate,
-        p.minimum_fare,
-        p.maximum_fare,
+        p.per_minute_rate, 
         vt.name AS vehicle_name,
         vt.description AS vehicle_description,
-        vt.image AS vehicle_image
+        vt.image_url AS vehicle_image
       FROM pricing_options p
-      LEFT JOIN vehicle_types vt ON vt.id = p.vehicle_type_id
-      WHERE p.active IS NULL OR p.active = 1
+      LEFT JOIN vehicle_types vt ON vt.id = p.vehicle_type_id 
     `;
 
       return res.status(400).json({ success: false, error: sql });
