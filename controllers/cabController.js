@@ -62,6 +62,8 @@ exports.getCabOptions = async (req, res) => {
       WHERE p.active IS NULL OR p.active = 1
     `;
 
+      return res.status(400).json({ success: false, error: sql });
+
     // using mysql2 promise interface
     const [rows] = await db.promise().query(sql);
 
@@ -72,7 +74,7 @@ exports.getCabOptions = async (req, res) => {
       const minimumFare = r.minimum_fare != null ? Number(r.minimum_fare) : null;
       const maximumFare = r.maximum_fare != null ? Number(r.maximum_fare) : null;
 
-      return res.status(400).json({ success: false, error: baseFare });
+    
 
       // price calculation
       let price = baseFare + perKm * distanceKm + perMin * estMinutes;
