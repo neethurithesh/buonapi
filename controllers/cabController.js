@@ -37,12 +37,14 @@ exports.getCabOptions = async (req, res) => {
       return res.status(400).json({ success: false, error: 'Invalid coordinates' });
     }
 
-  return res.status(400).json({ success: false, long: pLng });
-
+ 
 
     const distanceKm = haversineDistanceKm(pLat, pLng, dLat, dLng);
     // Optional: estimate duration in minutes (assume avg speed e.g. 30 km/h)
     const estMinutes = Math.max(1, Math.round((distanceKm / 30) * 60)); // crude estimate
+
+ return res.status(400).json({ success: false, distanceKm: distanceKm });
+
 
     // Join pricing_options with vehicle_types to get vehicle info
     const sql = `
