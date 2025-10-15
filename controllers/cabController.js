@@ -48,6 +48,7 @@ exports.getCabOptions = async (req, res) => {
         p.id AS pricing_id,
         p.vehicle_type_id,
         p.base_price,
+        p.name,
         p.price_per_km,
         p.price_per_minute, 
         vt.name AS vehicle_name,
@@ -62,6 +63,7 @@ exports.getCabOptions = async (req, res) => {
 
     const options = rows.map((r) => {
       const baseFare = Number(r.base_price || 0);
+      const vname = r.name;
       const perKm = Number(r.price_per_km || 0);
       const perMin = Number(r.price_per_minute || 0);
       const minimumFare = r.minimum_fare != null ? Number(r.minimum_fare) : null;
@@ -82,11 +84,12 @@ exports.getCabOptions = async (req, res) => {
         vehicle_type_id: r.vehicle_type_id,
         vehicle_type: {
           id: r.vehicle_type_id,
-          name: r.vehicle_name,
+          name: r.name,
           description: r.vehicle_description,
           image: r.vehicle_image,
         },
         pricing: {
+          name: vname,
           base_fare: baseFare,
           per_km_rate: perKm,
           per_minute_rate: perMin,
