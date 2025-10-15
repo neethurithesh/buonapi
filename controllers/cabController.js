@@ -99,6 +99,7 @@ exports.getCabOptions = async (req, res) => {
         distance_km: Number(distanceKm.toFixed(2)),
         estimated_minutes: estMinutes,
         price,
+        name: vname,
         eta: `${Math.max(1, Math.round(2 + Math.random() * 6))} mins` // simple ETA
       };
     });
