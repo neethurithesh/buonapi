@@ -47,9 +47,9 @@ exports.getCabOptions = async (req, res) => {
       SELECT
         p.id AS pricing_id,
         p.vehicle_type_id,
-        p.base_fare,
-        p.per_km_rate,
-        p.per_minute_rate, 
+        p.base_price,
+        p.price_per_km,
+        p.price_per_minute, 
         vt.name AS vehicle_name,
         vt.description AS vehicle_description,
         vt.image_url AS vehicle_image
@@ -61,9 +61,9 @@ exports.getCabOptions = async (req, res) => {
     const [rows] = await db.promise().query(sql);
 
     const options = rows.map((r) => {
-      const baseFare = Number(r.base_fare || 0);
-      const perKm = Number(r.per_km_rate || 0);
-      const perMin = Number(r.per_minute_rate || 0);
+      const baseFare = Number(r.base_price || 0);
+      const perKm = Number(r.price_per_km || 0);
+      const perMin = Number(r.price_per_minute || 0);
       const minimumFare = r.minimum_fare != null ? Number(r.minimum_fare) : null;
       const maximumFare = r.maximum_fare != null ? Number(r.maximum_fare) : null;
 
