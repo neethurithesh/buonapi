@@ -52,13 +52,13 @@ exports.create = async (req, res) => {
   try {
     const data = req.body || {};
     // Basic validation
-    if (!data.username) return res.status(400).json({ error: 'Username is required' });
-    if (!data.password) return res.status(400).json({ error: 'Password is required' });
-    if (!data.email) return res.status(400).json({ error: 'Email is required' });
+    if (!data.username) return res.status(400).json({  error: true, message: 'Username is required' });
+    if (!data.password) return res.status(400).json({ error: true, message: 'Password is required' });
+    //if (!data.email) return res.status(400).json({ error: 'Email is required' });
 
     // Check existing by email or username
     const existing = await query('SELECT id FROM users WHERE email = ? OR username = ? LIMIT 1', [data.email, data.username]);
-    if (existing.length > 0) return res.status(409).json({ error: 'Email or username already registered' });
+    if (existing.length > 0) return res.status(409).json({ error: true, message: 'Email or username already registered' });
 
     const hashed = await bcrypt.hash(data.password, SALT_ROUNDS);
     const insertData = { ...data, password: hashed };
@@ -72,7 +72,7 @@ exports.create = async (req, res) => {
     res.status(201).json({ success: 'Successfully Registered!', id: insertId, user: insertData });
   } catch (err) {
     console.error('create user error:', err);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({  error: true, message: 'Server error' });
   }
 };
 
