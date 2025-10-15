@@ -9,11 +9,23 @@ exports.getAll = (req, res) => {
 };
 
 exports.create = (req, res) => {
-  const data = req.body;
-  const id = uuidv4();
-  db.query('INSERT INTO notifications SET id = ?, ?', [id, data], (err) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.status(201).json({ id, ...data });
+  const data = { ...req.body };
+
+  // Remove id if it exists accidentally in the payload
+  delete data.id;
+
+  db.query('INSERT INTO notifications SET ?', data, (err, result) => {
+    if (err) {
+      console.error('Create notification error:', err);
+      return res.status(500).json({ error: err.message });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Notification created successfully',
+      id: result.insertId,
+      data
+    });
   });
 };
 
