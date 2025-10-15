@@ -16,6 +16,7 @@ app.use('/api/drivers', require('./routes/drivers'));
 app.use('/api/vehicle-types', require('./routes/vehicleTypes'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/settings', require('./routes/settings'));
 const cabRoutes = require('./routes/cab');
 app.use('/api/cab-options', cabRoutes);
 
