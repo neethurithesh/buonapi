@@ -38,8 +38,7 @@ exports.upsertSettings = async (req, res) => {
     for (const key of allowed) {
       if (Object.prototype.hasOwnProperty.call(req.body, key)) payload[key] = req.body[key];
     }
-    return res.status(400).json({ success: false, error: 'Test' });
-
+    
     if (Object.keys(payload).length === 0) {
       return res.status(400).json({ success: false, error: 'No valid fields provided' });
     }
