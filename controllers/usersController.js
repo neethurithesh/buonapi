@@ -12,7 +12,7 @@ const JWT_EXPIRES = process.env.JWT_EXPIRES_IN || '1d';
 // GET /api/users
 exports.getAll = async (req, res) => {
   try {
-    const results = await query('SELECT id, username, email, full_name, phone, created_at FROM users');
+    const results = await query('SELECT id, username, email, name, phone, created_at FROM users');
     res.json(results);
   } catch (err) {
     console.error('getAll users error:', err);
